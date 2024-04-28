@@ -88,3 +88,34 @@ db.collection('users').insertOne(
 저널링은 데이터베이스의 안전성과 복구를 보장하는 중요한 기능입니다. 이를 통해 쓰기 작업이 안전하게 처리되고, 시스템 장애나 오류 시에도 데이터 손실을 방지할 수 있습니다.
 
 오.. 안정적으로 데이터가 저장되어야만 하는 곳에 써볼만 한듯??
+아! mongoose에서 어떻게 사용하는지도 알아보고 가자!
+
+### Mongoose에서 Write Concern 설정
+
+Mongoose에서 데이터베이스에 쓰기 작업을 할 때 Write Concern을 지정하면, 저널링에 관한 제어가 가능함. Write Concern의 `j` 옵션을 `true`로 설정하면, 저널에 기록된 후 성공으로 간주함. 이렇게 설정하면 저널링을 통해 데이터의 안정성과 복구 가능성을 보장할 수 있음.
+
+### Mongoose에서 Write Concern을 사용한 예시
+
+1. **Insert 작업에서 저널링 사용**
+
+   ```javascript
+   const User = require('./models/user'); // Mongoose 모델
+
+   User.create(
+     { name: 'John', email: 'john@example.com' },
+     { writeConcern: { j: true } } // 저널링 활성화
+   );
+   ```
+
+   이 예시에서 `create` 메서드에 `writeConcern`을 `{ j: true }`로 설정하여, 저널링을 활성화함. 데이터가 저널에 기록된 후 성공으로 간주함.
+
+2. **Insert 작업에서 Write Concern 설정**
+
+   ```javascript
+   User.insertMany(
+     [{ name: 'Alice' }, { name: 'Bob' }],
+     { writeConcern: { w: 'majority', j: true } } // 과반수 복제본과 저널링 활성화
+   );
+   ```
+
+   이 예시에서는 `insertMany` 메서드에 Write Concern을 `{ w: 'majority', j: true }`로 설정함. 과반수의 복제본이 쓰기 작업을 처리하고, 저널에 기록된 후 성공으로 간주함.
