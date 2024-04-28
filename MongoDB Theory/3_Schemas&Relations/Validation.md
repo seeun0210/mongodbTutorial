@@ -270,5 +270,4 @@ export const lengthValidationMessage = (args: ValidationArguments) => {
 };
 ```
 
-이렇게 동적으로 validate-message를 만들어주는 것도 가능하다...이런거 몇개만 만들어 놓고 그냥 OOP로 주입해서 사용하면 되니까 편했는데
-아무튼 그렇다
+이렇게 동적으로 validate-message를 만들어주는 것도 가능하다..하나 만들어놓고 돌려쓰면 편함
