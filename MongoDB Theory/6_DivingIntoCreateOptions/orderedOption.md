@@ -55,3 +55,55 @@ MongoDB에서 `ordered` 옵션은 `insertMany` 메서드와 함께 사용하여 
 - **데이터 무결성**: 오류로 인한 데이터 삽입 중단을 원한다면 `ordered: true`를 사용.
 - **대량 삽입 작업**: 최대한 많은 문서를 삽입하고자 할 때는 `ordered: false`를 사용.
 - **오류 처리**: `ordered: true`는 오류가 발생한 지점에서 중단하므로, 어떤 문서가 삽입되지 않았는지 쉽게 알 수 있음
+
+## Mongoose에서 어떻게 씀??
+
+Mongoose에서 `insertMany` 메서드를 사용하여 여러 문서를 삽입할 때, `ordered` 옵션을 지정할 수 있습니다. 이 옵션을 통해 삽입 과정에서 오류가 발생할 때의 동작을 제어할 수 있습니다.
+
+### `ordered: true`
+
+`ordered: true`로 설정하면, 삽입 중에 오류가 발생할 경우 작업이 즉시 중단되고, 나머지 문서들은 삽입되지 않습니다. 이는 데이터 무결성을 유지하기 위해 사용됩니다.
+
+### `ordered: false`
+
+`ordered: false`로 설정하면, 오류가 발생해도 나머지 문서들을 계속 삽입합니다. 이는 대량 삽입 작업에서 일부 오류가 발생해도 최대한 많은 문서를 삽입하고자 할 때 사용됩니다.
+
+Mongoose에서 `insertMany`와 `ordered` 옵션을 사용하는 예시를 살펴보겠습니다.
+
+### `ordered: true` 사용 예시
+
+```javascript
+const mongoose = require('mongoose');
+const User = require('./models/user'); // Mongoose 모델 임포트
+
+// 문서 삽입
+const users = [
+  { name: 'John', age: 30 },
+  { name: 'Jane', age: 'twenty' }, // 오류 발생
+  { name: 'Sam', age: 25 },
+];
+
+User.insertMany(users, { ordered: true })
+  .then((result) => {
+    console.log('Inserted documents:', result); // 오류 없이 삽입된 문서
+  })
+  .catch((err) => {
+    console.error('Error:', err); // 오류 정보
+  });
+```
+
+이 예시에서는 두 번째 문서에서 오류가 발생하므로, `ordered: true`로 설정하면 삽입 작업이 중단되고 나머지 문서들은 삽입되지 않습니다.
+
+### `ordered: false` 사용 예시
+
+```javascript
+User.insertMany(users, { ordered: false })
+  .then((result) => {
+    console.log('Inserted documents:', result); // 오류 없이 삽입된 문서
+  })
+  .catch((err) => {
+    console.error('Error:', err); // 오류 정보 (여러 오류 가능)
+  });
+```
+
+`ordered: false`로 설정하면 오류가 발생해도 나머지 문서들은 계속 삽입됩니다. 오류 정보와 성공적으로 삽입된 문서 정보를 모두 반환합니다.
